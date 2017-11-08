@@ -7,39 +7,66 @@ import urllib.request
 import json
 import sys
 
-chatid = sys.argv[2]
+from telegram.ext import Updater
 
-bot = telegram.Bot(token=sys.argv[1])
+chatid = sys.argv[2]
+token = sys.argv[1]
+
+updater = Updater(token=token)
+dispatcher = updater.dispatcher
+bot = updater.bot
 
 def sendIPOnMap(ip):
-    if not re.search("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", ip):
+
+    match = re.search("(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", ip)
+
+    if not match:
         ip = ip.split(".")[0].replace("-", ".")
-
+  
         ip = re.sub("[a-zA-Z]", "", ip)
+        ip = ip.strip()
 
-        if re.search("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", ip):
-            try:
-                with urllib.request.urlopen("https://freegeoip.net/json/"+ip) as url:
-                    data = json.loads(url.read().decode())
-                    bot.send_location(chat_id=chatid, latitude=data["latitude"], longitude=data["longitude"])
-            except HTTPError as e:
-                print(e)
-
+        sendIPOnMap(ip)
+    else:
+         try:
+             with urllib.request.urlopen("https://freegeoip.net/json/"+match.group(0)) as url:
+                 data = json.loads(url.read().decode())
+                 bot.send_location(chat_id=chatid, latitude=data["latitude"], longitude=data["longitude"])
+         except HTTPError as e:
+             print(e)
+             sendMessage("Unable to locate IP")
+         
+def sendMessage(message):
+     bot.send_message(chat_id=chatid, text=message)
+                
 for line in tailer.follow(open("/var/log/auth.log")):
+    match1 = re.search("authentication error for (.*) from (.*)", line)
+    match2 = re.search("Failed password for (.*) from (.*)", line)
+    
+    match = None
 
-    ip = ""
+    if match1:
+        match = match1
+    elif match2:
+        match = match2
 
-    if line.split()[5] == "error:":
-        if line.split()[10] == "illegal":
-            bot.send_message(chat_id=chatid, text="Authentication error for user "+line.split()[12]+" from "+line.split()[14])
-            sendIPOnMap(line.split()[14])
-        elif line.split()[6] == "maximum":
-             bot.send_message(chat_id=chatid, text="Authentication error for user "+line.split()[11]+" from "+line.split()[13])
-             sendIPOnMap(line.split()[13])
+    if match:
+        message = "Authentication failure for "
+
+        nameArray = match.group(1).split()
+        
+        if not len(nameArray) == 1:
+            name = nameArray[-1]
+
+            message += "non-existent user "
+            message +=  name
+            
         else:
-            bot.send_message(chat_id=chatid, text="Authentication error for user "+line.split()[10]+" from "+line.split()[12])
-            sendIPOnMap(line.split()[12])
-
-    if line.split()[5] == "Failed":
-         bot.send_message(chat_id=chatid, text="Authentication error for user "+line.split()[8]+" from "+line.split()[10])
-         sendIPOnMap(line.split()[10])
+            message += "user "
+            message += nameArray[0]
+            
+        message += " from "
+        message += match.group(2)
+    
+        sendMessage(message)
+        sendIPOnMap(match.group(2))
