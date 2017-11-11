@@ -6,11 +6,17 @@ import re
 import urllib.request
 import json
 import sys
+import configparser
+import os
 
 from telegram.ext import Updater
 
-chatid = sys.argv[2]
-token = sys.argv[1]
+with open(os.path.expanduser(sys.argv[1])) as fp:
+    config = configparser.ConfigParser()
+    config.readfp(fp)
+
+chatid = config.get("settings", "chat_id")
+token = config.get("settings", "token")
 
 updater = Updater(token=token)
 dispatcher = updater.dispatcher

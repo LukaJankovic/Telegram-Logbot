@@ -10,7 +10,9 @@ Sends you a message when an incorrect login was made, along with a location appr
 
 ## Usage
 
-`python3 logbot.py $token $chat_id`
+`python3 logbot.py $configPath`
+
+There is a sample config file included in this repo (logbot.cfg) which can be used. For now only two options are present; chat_id and token. As more features are added, more settings will be added. Then I'll also compile a list describing the settings.
 
 The token can be acquired from the Botfather.
 
@@ -34,7 +36,7 @@ start_cmd="logbot_start"
 
 logbot_start()
 {
-    /usr/local/bin/python3 /usr/home/luka/Documents/Python/Logbot/logbot.py $token $chatid &
+    /usr/local/bin/python3 /usr/home/luka/Documents/Python/Logbot/logbot.py $configPath &
 }
 
 load_rc_config $name
@@ -45,5 +47,6 @@ run_rc_command "$1"
 ## Plans
 
 * Send notification when user logs in
-* Some kind of config system? Also, incorporate being able to acquire chat_id.
-
+* Send notification when service starts
+* ~~Config file~~
+* Method for acquiring chat_id
