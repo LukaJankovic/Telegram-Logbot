@@ -18,6 +18,9 @@ The token can be acquired from the Botfather.
 
 The chat id can be obtained by following [this guide](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-Your-first-Bot), until they mention the `def start(bot, update):` function. From there the chat_id can be acquired using `update.message.chat_id`
 
+## Mode
+I've added a secondary mode that sends a notification when a user logs in instead of a failed login. For now it probably only works on FreeBSD, however, feel free to open an issue and I'll try to incorporate support for your OS.
+
 ## Autostart
 
 Create a service that runs the script, and enable it on boot. This will be different depending on which OS you're using. I'm running FreeBSD, so for me this file in rc.d works fine:
@@ -46,7 +49,7 @@ run_rc_command "$1"
 
 ## Plans
 
-* Send notification when user logs in
+* ~~Send notification when user logs in~~
 * Send notification when service starts
 * ~~Config file~~
 * Method for acquiring chat_id
