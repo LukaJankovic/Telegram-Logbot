@@ -46,33 +46,51 @@ def sendMessage(message):
      bot.send_message(chat_id=chatid, text=message)
                 
 for line in tailer.follow(open("/var/log/auth.log")):
-    match1 = re.search("authentication error for (.*) from (.*)", line)
-    match2 = re.search("Failed password for (.*) from (.*)", line)
+
+    if config.get("settings", "mode") == 1:
+        match1 = re.search("authentication error for (.*) from (.*)", line)
+        match2 = re.search("Failed password for (.*) from (.*)", line)
     
-    match = None
+        match = None
 
-    if match1:
-        match = match1
-    elif match2:
-        match = match2
+        if match1:
+            match = match1
+        elif match2:
+            match = match2
 
-    if match:
-        message = "Authentication failure for "
+        if match:
+            message = "Authentication failure for "
 
-        nameArray = match.group(1).split()
+            nameArray = match.group(1).split()
         
-        if not len(nameArray) == 1:
-            name = nameArray[-1]
+            if not len(nameArray) == 1:
+                name = nameArray[-1]
 
-            message += "non-existent user "
-            message +=  name
+                message += "non-existent user "
+                message +=  name
             
-        else:
-            message += "user "
-            message += nameArray[0]
+            else:
+                message += "user "
+                message += nameArray[0]
             
-        message += " from "
-        message += match.group(2)
+            message += " from "
+            message += match.group(2)
     
-        sendMessage(message)
-        sendIPOnMap(match.group(2))
+            sendMessage(message)
+            sendIPOnMap(match.group(2))
+
+    else:
+        match = re.search("Accepted keyboard-interactive\/pam for (.*) from (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})", line)
+
+        if match:
+            message = "User "
+            name = match.group(1)
+
+            message += name
+            message += " logged in successfully from "
+
+            ip = match.group(2)
+            message += ip
+
+            sendMessage(message)
+            sendIPOnMap(ip)
