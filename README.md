@@ -1,6 +1,8 @@
 ## Logbot for Telegram
 
-Sends you a message when an incorrect login was made, along with a location approximation of the IP that was trying to log in. Tested on FreeBSD. Might, or might not work on other systems, but open an issue if you need help setting it up on your system!
+So I've decided to revive this project. I've done some cleanup including a better pattern search as well as improving the ease of use. For example, it is no longer required to fetch the chat id yourself, the script takes care of it itself!
+
+Though it is no longer able to send location, since freegeoip merged into ipstack, which means new API endpoints as well as requiring an access key.
 
 ## Requirements
 
@@ -12,44 +14,11 @@ Sends you a message when an incorrect login was made, along with a location appr
 
 `python3 logbot.py $configPath`
 
-There is a sample config file included in this repo (logbot.cfg) which can be used. For now only two options are present; chat_id and token. As more features are added, more settings will be added. Then I'll also compile a list describing the settings.
+There is a sample config file included in this repo (logbot.cfg) which can be used. Only token is required to get started; if you have a different ssh log path it can be specified here as well (key=logpath)
 
 The token can be acquired from the Botfather.
 
-The chat id can be obtained by following [this guide](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-Your-first-Bot), until they mention the `def start(bot, update):` function. From there the chat_id can be acquired using `update.message.chat_id`
+## Roadmap
 
-## Mode
-I've added a secondary mode that sends a notification when a user logs in instead of a failed login. For now it probably only works on FreeBSD, however, feel free to open an issue and I'll try to incorporate support for your OS.
-
-## Autostart
-
-Create a service that runs the script, and enable it on boot. This will be different depending on which OS you're using. I'm running FreeBSD, so for me this file in rc.d works fine:
-
-```
-
-#!/bin/sh
-
-# PROVIDE: logbot
-
-. /etc/rc.subr
-
-name="logbot"
-rcvar=`set_rcvar`
-start_cmd="logbot_start"
-
-logbot_start()
-{
-    /usr/local/bin/python3 /usr/home/luka/Documents/Python/Logbot/logbot.py $configPath &
-}
-
-load_rc_config $name
-run_rc_command "$1"
-
-```
-
-## Plans
-
-* ~~Send notification when user logs in~~
-* Send notification when service starts
-* ~~Config file~~
-* Method for acquiring chat_id
+* Fix Location
+* Rework this as a service..
