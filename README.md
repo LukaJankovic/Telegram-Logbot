@@ -18,6 +18,10 @@ There is a sample config file included in this repo (logbot.cfg) which can be us
 
 The token can be acquired from the Botfather.
 
+## IP Lookup
+
+Sadly IP lookup now requires registration for an API key. That can be done [here](https://ipstack.com/product). Then enter the API key in the cfg file.
+
 ## Roadmap
 
 * Fix Location

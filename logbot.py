@@ -17,6 +17,7 @@ with open(os.path.expanduser(sys.argv[1])) as fp:
     config.readfp(fp)
 
 token = config.get("settings", "token")
+ipstack_token = config.get("settings", "ipstack_token")
 path = None
 
 if config.get("settings", "logpath"):
@@ -31,25 +32,18 @@ chatid = None
 
 def sendIPOnMap(ip):
 
-    global bot
+    global ipstack_token
+    
+    if ipstack_token:
+        global bot
 
-    match = re.search("(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", ip)
-
-    if not match:
-        ip = ip.split(".")[0].replace("-", ".")
-  
-        ip = re.sub("[a-zA-Z]", "", ip)
-        ip = ip.strip()
-
-        sendIPOnMap(ip)
-    else:
-         try:
-             with urllib.request.urlopen("https://freegeoip.net/json/"+match.group(0)) as url:
-                 data = json.loads(url.read().decode())
-                 bot.send_location(chat_id=chatid, latitude=data["latitude"], longitude=data["longitude"])
-         except HTTPError as e:
-             print(e)
-             sendMessage("Unable to locate IP")
+        try:
+            with urllib.request.urlopen("http://api.ipstack.com/"+ip+"?access_key="+ipstack_token) as url:
+                data = json.loads(url.read().decode())
+                bot.send_location(chat_id=chatid, latitude=data["latitude"], longitude=data["longitude"])
+        except HTTPError as e:
+            print(e)
+            sendMessage("Unable to locate IP")
          
 def sendMessage(message):
     global bot
@@ -101,7 +95,7 @@ def start(abot, update):
             message += match.group(2)
     
             sendMessage(message)
-            #sendIPOnMap(match.group(2))
+            sendIPOnMap(match.group(2))
 
         else:
 
@@ -133,7 +127,7 @@ def start(abot, update):
                 message += ip
 
                 sendMessage(message)
-                #sendIPOnMap(ip)
+                sendIPOnMap(ip)
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
