@@ -14,10 +14,27 @@ from telegram.ext import CommandHandler
 
 with open(os.path.expanduser(sys.argv[1])) as fp:
     config = configparser.ConfigParser()
-    config.readfp(fp)
+    config.read_file(fp)
 
-token = config.get("settings", "token")
-ipstack_token = config.get("settings", "ipstack_token")
+token = None
+
+try:
+    token = config.get("settings", "token")
+except (configparser.NoSectionError, configparser.NoOptionError):
+    print("Invalid config file.")
+    exit(1)
+
+if not token or token == "":
+    print("No telegram bot token, please speak to the botfather.")
+    exit(1)
+
+ipstack_token = None
+
+try:
+    ipstack_token = config.get("settings", "ipstack_token")
+except (configparser.NoSectionError, configparser.NoOptionError):
+    pass
+
 path = None
 
 if config.get("settings", "logpath"):
@@ -33,7 +50,7 @@ chatid = None
 def sendIPOnMap(ip):
 
     global ipstack_token
-    
+
     if ipstack_token:
         global bot
 
