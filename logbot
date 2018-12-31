@@ -12,6 +12,10 @@ import os
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 
+if len(sys.argv) != 2:
+    print("Please provide config file")
+    exit(1)
+
 with open(os.path.expanduser(sys.argv[1])) as fp:
     config = configparser.ConfigParser()
     config.read_file(fp)
