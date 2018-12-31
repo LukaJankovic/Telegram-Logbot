@@ -1,0 +1,10 @@
+[Unit]
+Description=Logbot launcher service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env logbot /etc/logbot.cfg
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
