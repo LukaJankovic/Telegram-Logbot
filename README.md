@@ -12,7 +12,10 @@ Though it is no longer able to send location, since freegeoip merged into ipstac
 
 ## Usage
 
-`python3 logbot.py $configPath`
+```
+sudo python3 setup.py install
+logbot $configPath
+```
 
 There is a sample config file included in this repo (logbot.cfg) which can be used. Only token is required to get started; if you have a different ssh log path it can be specified here as well (key=logpath)
 
