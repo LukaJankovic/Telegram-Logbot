@@ -30,6 +30,10 @@ dispatcher = updater.dispatcher
 bot = None
 chatid = None
 
+if not token:
+    print("No Telegram Bot token. Please edit config")
+    exit(1)
+
 def sendIPOnMap(ip):
 
     global ipstack_token
@@ -61,6 +65,8 @@ def start(abot, update):
     global chatid
     chatid = update.message.chat_id
 
+    sendMessage("LogBot starting.")
+    
     for line in tailer.follow(open(path)):
 
         match1 = re.search("authentication error for (.*) from (\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})", line)
@@ -117,11 +123,11 @@ def start(abot, update):
 
                 print("Authentication successfull")
 
-                message = "User "
                 name = match.group(1)
 
+                message = "Authentication successfull for user "
                 message += name
-                message += " logged in successfully from "
+                message += " from "
 
                 ip = match.group(2)
                 message += ip
